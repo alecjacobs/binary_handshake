@@ -6,40 +6,34 @@
 # 1000 = "jump"
 # 10000 = Reverse the order of the operations in the secret handshake.
 
-class SecretHandshake
-  RESPONSES = [
-    "wink",
-    "double blink",
-    "close your eyes",
-    "jump"
-  ]
+# http://calleerlandsson.com/2014/02/06/rubys-bitwise-operators/
+# ...had some bitwise operator help :)
 
-  def initialize(bits)
-    # @bits = bits.rjust(5, '0').chars
-    # p "bits: #{@bits}"
-    @bits = bits.to_i(2)
+class SecretHandshake
+  RESPONSES = {
+    1 => "wink",
+    2 => "double blink",
+    4 => "close your eyes",
+    8 => "jump"
+  }
+  
+  def initialize(bits_string)
+    @bits_value = bits_string.to_i(2)
   end
 
   def commands
     output = []
-    @bits.each_with_index do |bit, i|
-      output << RESPONSES[i] if bit == '1'
-      p "output: #{output}"
+
+    RESPONSES.each do |k, v|
+      if (@bits_value & k) > 0
+        output << v
+      end
     end
 
-    return output
-
-    case @bits
-    when "1", "10", "100", "1000"
-      [RESPONSES[@bits]]
-    when "11"
-      ["wink", "double blink"]
-    when "10011"
-      ["double blink", "wink"]
-    when "11111"
-      ["jump", "close your eyes", "double blink", "wink"]
-    else
-      []
+    if @bits_value & 16 > 0
+      output.reverse!
     end
+
+    output
   end
 end
